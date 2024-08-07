@@ -25,4 +25,9 @@ public class LiteralSubParser extends SubParserNonBranching {
         // No match
         return new SubParser[0];
     }
+
+    @Override
+    public String toString() {
+        return "LiteralSubParser(\""+literal+"\")";
+    }
 }

@@ -28,9 +28,17 @@ public class ParserState {
      * 
      * @param cursor The current cursor position - the cursor *before* the current character.
      * @param next_char The character after the current cursor. May be null if we are at EOF.
+     * @param exhaustive If true, exhaustively search for all possible matches, even those with 
+     * lower precedence. (This is *not* needed to allow multiple *non-overlapping* matches, but 
+     * *is* needed to allow multiple *overlapping* matches.) There is a performance penalty for
+     * using this option.
      * @return A list of all potential next states, in order of precedence.
      */
-    public ParserState[] feed(Cursor cursor, Character next_char){
+    public ParserState[] feed(Cursor cursor, Character next_char, boolean exhaustive){
+        if (sub.isFinal()){
+            // We've already matched; leave the match as is and retain this state
+            return new ParserState[]{this};
+        }
         SubParser[] next = sub.feed(cursor, next_char, marks);
         if (next.length == 0){
             return new ParserState[0];
@@ -39,7 +47,12 @@ public class ParserState {
         LinkedList<ParserState> outputStates = new LinkedList<ParserState>();
         for (int i = 0; i < next.length; i++) {
             ParserState newState = new ParserState(next[i], this.marks);
-            if (next[i].isEpsilon()){
+            if (next[i].isFinal()){
+                // We reached the final accepting state; call feed one last time so it can add a mark
+                next[i].feed(cursor, next_char, this.marks);
+                outputStates.add(new ParserState(next[i], this.marks));
+            }
+            else if (next[i].isEpsilon()){
                 // If the state is an epsilon transition, recursively resolve it before adding
                 outputStates.addAll(Arrays.asList(newState.feed(cursor, next_char)));
             }
@@ -47,7 +60,12 @@ public class ParserState {
                 // Otherwise, just return the new state
                 outputStates.add(newState);
             }
-            if (outputStates.getLast().sub.isFinal()){
+            if (!exhaustive && i == 0 && outputStates.getFirst().sub.isFinal()){
+                // A matching state at the first position indicates that a match at the highest 
+                // possible precedence was found. No further evaluation is needed.
+                break;
+            }
+            if (!exhaustive && outputStates.getLast().sub.isFinal()){
                 // Optimization - if a final state is reached, all states afterward can immediately be discarded
                 // This works because any matches found after this would have lower precedence anyway.
                 break;
@@ -56,7 +74,15 @@ public class ParserState {
         return outputStates.toArray(new ParserState[outputStates.size()]);
     }
 
+    public ParserState[] feed(Cursor cursor, Character next_char){
+        return this.feed(cursor, next_char, false);
+    }
     public Mark[] getMarks(){
         return marks.toArray(new Mark[marks.size()]);
+    }
+
+    @Override
+    public String toString() {
+        return "ParserState("+sub+")";
     }
 }
