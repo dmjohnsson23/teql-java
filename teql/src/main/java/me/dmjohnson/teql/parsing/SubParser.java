@@ -12,8 +12,8 @@ public abstract class SubParser implements Cloneable{
      * Feed in the next character in the string to be parsed, returning an array of valid states 
      * for the next character.
      * 
-     * @param cursor
-     * @param next_char
+     * @param cursor The current cursor position - the cursor *before* the current character.
+     * @param next_char The character after the current cursor. May be null if we are at EOF.
      * @param markList A list of marks in the string, which this method may append to
      * @return All possible next parse states from this one, given the input character. This will 
      * be an empty array if this state does not match, and may contain an intermediate version of 

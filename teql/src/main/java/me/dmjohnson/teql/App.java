@@ -1,29 +1,23 @@
 package me.dmjohnson.teql;
 
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-import me.dmjohnson.teql.selector.RegexSelector;
-import me.dmjohnson.teql.selector.Selection;
-import me.dmjohnson.teql.selector.Selector;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class App{
     public static void main( String[] args ){
         Context context;
         try {
-            context = Context.fromFile("/home/dominick/OneDrive/Linux/teql/test/files/aristotle.html");
-            System.out.println(context.subContext(0, 100).data);
-        } catch (IOException e) {
-            System.out.println("Failed to open file");
+            context = new FileContext(new FileInputStream("/home/dominick/OneDrive/Linux/teql/test/files/jabberwocky.txt"));
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
             return;
         }
-        Selector selector = new RegexSelector("i");
-        Selection result = selector.find_one(context);
-        if (result == null){
-            System.out.println("No match found");
-        }
-        else{
-            System.out.println( result.start );
-            System.out.println( result.end );
+
+        for (Pair<Cursor, Character> pair : context) {
+            System.out.println(pair);
         }
     }
 }

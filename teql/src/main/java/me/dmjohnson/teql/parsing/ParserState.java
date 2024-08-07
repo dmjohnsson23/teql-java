@@ -13,6 +13,8 @@ public class ParserState {
         this.sub = sub;
         this.marks = new LinkedList<Mark>();
     }
+    
+    @SuppressWarnings("unchecked")
     public ParserState(SubParser sub, LinkedList<Mark> marks){
         this.sub = sub;
         this.marks = (LinkedList<Mark>)marks.clone();
@@ -24,12 +26,12 @@ public class ParserState {
     /**
      * Feed the next character into the parsers
      * 
-     * @param cursor The current cursor position - the cursor *before* the current character
-     * @param next_char
+     * @param cursor The current cursor position - the cursor *before* the current character.
+     * @param next_char The character after the current cursor. May be null if we are at EOF.
      * @return A list of all potential next states, in order of precedence.
      */
     public ParserState[] feed(Cursor cursor, Character next_char){
-        SubParser[] next = sub.feed(next_char, cursor, marks);
+        SubParser[] next = sub.feed(cursor, next_char, marks);
         if (next.length == 0){
             return new ParserState[0];
         }

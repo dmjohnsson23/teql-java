@@ -12,7 +12,7 @@ public class LiteralSubParser extends SubParserNonBranching {
 
     @Override
     public SubParser[] feed(Cursor cursor, Character next_char, List<Mark> markList) {
-        if (next_char.equals(literal.charAt(0))){
+        if (next_char != null && next_char.equals(literal.charAt(0))){
             // Fed character matches
             if (literal.length() == 1){
                 // Reached a full match

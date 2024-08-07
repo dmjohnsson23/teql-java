@@ -8,3 +8,7 @@ And attempt to re-write and re-design my previous [Python-based](https://github.
 * Edits can be made with only a second pass
 * The entire file does not need to be loaded into memory for either operation
 * Write the regex engine from scratch so it can actually integrate with the rest of the system
+
+### Cool ideas to look at later (but not right now!)
+
+* Language-aware selectors (e.g. we could parse a Python file as we iterate over it, and match against the parse events) as plugins
