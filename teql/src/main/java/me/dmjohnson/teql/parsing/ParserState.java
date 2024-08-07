@@ -60,6 +60,7 @@ public class ParserState {
                 // Otherwise, just return the new state
                 outputStates.add(newState);
             }
+            if (outputStates.size() < 1) continue;
             if (!exhaustive && i == 0 && outputStates.getFirst().sub.isFinal()){
                 // A matching state at the first position indicates that a match at the highest 
                 // possible precedence was found. No further evaluation is needed.
