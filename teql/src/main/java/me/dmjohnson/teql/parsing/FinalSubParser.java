@@ -16,4 +16,9 @@ public class FinalSubParser extends SubParser {
     public boolean isFinal() {
         return true;
     }
+
+    @Override
+    public SubParser then(SubParser next) {
+        throw new UnsupportedOperationException("Final subparser can have no next");
+    }
 }

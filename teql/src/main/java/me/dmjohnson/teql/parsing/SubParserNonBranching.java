@@ -16,7 +16,7 @@ public abstract class SubParserNonBranching extends SubParser{
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    protected SubParser clone() throws CloneNotSupportedException {
+        return (SubParser)super.clone();
     }
 }

@@ -39,4 +39,6 @@ public abstract class SubParser implements Cloneable{
     public boolean isFinal(){
         return false;
     }
+
+    abstract public SubParser then(SubParser next);
 }

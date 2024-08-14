@@ -8,6 +8,7 @@ import me.dmjohnson.teql.Cursor;
 public class ParserState {
     protected LinkedList<Mark> marks;
     public final SubParser sub;
+    private boolean finalized = false;
 
     public ParserState(SubParser sub){
         this.sub = sub;
@@ -36,6 +37,10 @@ public class ParserState {
      */
     public ParserState[] feed(Cursor cursor, Character next_char, boolean exhaustive){
         if (sub.isFinal()){
+            if (!finalized){
+                finalized = true;
+                sub.feed(cursor, next_char, marks);
+            }
             // We've already matched; leave the match as is and retain this state
             return new ParserState[]{this};
         }
@@ -47,12 +52,7 @@ public class ParserState {
         LinkedList<ParserState> outputStates = new LinkedList<ParserState>();
         for (int i = 0; i < next.length; i++) {
             ParserState newState = new ParserState(next[i], this.marks);
-            if (next[i].isFinal()){
-                // We reached the final accepting state; call feed one last time so it can add a mark
-                next[i].feed(cursor, next_char, this.marks);
-                outputStates.add(new ParserState(next[i], this.marks));
-            }
-            else if (next[i].isEpsilon()){
+            if (next[i].isEpsilon()){
                 // If the state is an epsilon transition, recursively resolve it before adding
                 outputStates.addAll(Arrays.asList(newState.feed(cursor, next_char)));
             }

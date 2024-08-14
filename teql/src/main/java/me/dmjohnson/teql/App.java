@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import me.dmjohnson.teql.parsing.CharacterClassSubParser;
 import me.dmjohnson.teql.parsing.EndAnchorSubParser;
 import me.dmjohnson.teql.parsing.EverythingSubParser;
 import me.dmjohnson.teql.parsing.FinalSubParser;
@@ -30,13 +31,8 @@ public class App{
         }
 
         StartSubParser start = new StartSubParser(new SubParser[]{
-            new LineStartAnchorSubParser()
-                .then(new EverythingSubParser(false)
-                .then(new LiteralSubParser("Jabberwock")
-                .then(new EverythingSubParser(false)
-                .then(new LineEndAnchorSubParser()
-                .then(new FinalSubParser()
-            )))))
+            new LiteralSubParser("Jabberwock")
+                .then(new FinalSubParser())
         }, "selector");
         Parser parser = new Parser(new StartSubParser[]{start});
         Mark[][] results = parser.find_all(context);

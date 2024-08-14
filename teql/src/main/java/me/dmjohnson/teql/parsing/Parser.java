@@ -26,6 +26,13 @@ public class Parser {
         LinkedList<ParserState> currentStates = new LinkedList<ParserState>();
         LinkedList<ParserState> nextStates = new LinkedList<ParserState>();
         for (Pair<Cursor, Character> pair : context) {
+            // If the first item is a match, add it to the output and reset the state to find the next non-overlapping match
+            if (currentStates.size() >= 1 && currentStates.getFirst().sub.isFinal()){
+                System.out.println("Found the end!");
+                output.add(currentStates.getFirst().feed(pair.getLeft(), pair.getRight())[0].getMarks());
+                currentStates.clear();
+                currentStates.clear();
+            }
             // Append the start states each loop to allow unanchored matches
             for (SubParser subParser : startStates) {
                 ParserState state = new ParserState(subParser);
@@ -42,17 +49,9 @@ public class Parser {
                     state.feed(pair.getLeft(), pair.getRight())
                 ));
             }
-            // If the first item is a match, add it to the output and reset the state to find the next non-overlapping match
-            if (nextStates.size() >= 1 && nextStates.getFirst().sub.isFinal()){
-                output.add(nextStates.getFirst().getMarks());
-                currentStates.clear();
-                nextStates.clear();
-            }
             // Otherwise, rotate the state lists
-            else{
-                currentStates = nextStates;
-                nextStates = new LinkedList<ParserState>();
-            }
+            currentStates = nextStates;
+            nextStates = new LinkedList<ParserState>();
         }
         return output.toArray(new Mark[output.size()][]);
     }

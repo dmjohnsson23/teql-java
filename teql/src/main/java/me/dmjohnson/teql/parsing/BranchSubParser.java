@@ -4,17 +4,14 @@ import java.util.List;
 
 import me.dmjohnson.teql.Cursor;
 
-public class StartSubParser extends SubParser {
+public class BranchSubParser extends SubParser {
     public SubParser[] branches;
-    public final String id;
-    public StartSubParser(SubParser[] branches, String id){
+    public BranchSubParser(SubParser[] branches){
         this.branches = branches;
-        this.id = id;
     }
 
     @Override
     public SubParser[] feed(Cursor cursor, Character next_char, List<Mark> markList) {
-        markList.add(new Mark(cursor, "start", id));
         return branches;
     }
     
@@ -25,11 +22,14 @@ public class StartSubParser extends SubParser {
 
     @Override
     public String toString() {
-        return "StartSubParser(id: "+id+")";
+        return "BranchSubParser()";
     }
 
-    @Override
-    public SubParser then(SubParser next) {
-        return new StartSubParser(new SubParser[]{next}, id);
+    public BranchSubParser then(SubParser next){
+        SubParser[] newBranches = new SubParser[branches.length];
+        for (int i = 0; i < branches.length; i++) {
+            newBranches[i] = branches[i].then(next);
+        }
+        return new BranchSubParser(newBranches);
     }
 }
