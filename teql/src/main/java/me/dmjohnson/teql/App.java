@@ -13,7 +13,10 @@ import me.dmjohnson.teql.parsing.LineEndAnchorSubParser;
 import me.dmjohnson.teql.parsing.LineStartAnchorSubParser;
 import me.dmjohnson.teql.parsing.LiteralSubParser;
 import me.dmjohnson.teql.parsing.Mark;
+import me.dmjohnson.teql.parsing.MarkPrevSubParser;
+import me.dmjohnson.teql.parsing.MarkSubParser;
 import me.dmjohnson.teql.parsing.Parser;
+import me.dmjohnson.teql.parsing.RepeatSubParser;
 import me.dmjohnson.teql.parsing.StartAnchorSubParser;
 import me.dmjohnson.teql.parsing.StartSubParser;
 import me.dmjohnson.teql.parsing.SubParser;
@@ -31,8 +34,13 @@ public class App{
         }
 
         StartSubParser start = new StartSubParser(new SubParser[]{
-            new LiteralSubParser("Jabberwock")
-                .then(new FinalSubParser())
+            CharacterClassSubParser.whitespace()
+                .then(new MarkSubParser("start of word")
+                .then(new RepeatSubParser(CharacterClassSubParser.word(), 8, null)
+                .then(new MarkSubParser("end of word")
+                .then(CharacterClassSubParser.whitespace()
+                .then(new FinalSubParser()
+            )))))
         }, "selector");
         Parser parser = new Parser(new StartSubParser[]{start});
         Mark[][] results = parser.find_all(context);

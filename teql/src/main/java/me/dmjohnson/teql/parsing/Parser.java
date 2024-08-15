@@ -28,7 +28,6 @@ public class Parser {
         for (Pair<Cursor, Character> pair : context) {
             // If the first item is a match, add it to the output and reset the state to find the next non-overlapping match
             if (currentStates.size() >= 1 && currentStates.getFirst().sub.isFinal()){
-                System.out.println("Found the end!");
                 output.add(currentStates.getFirst().feed(pair.getLeft(), pair.getRight())[0].getMarks());
                 currentStates.clear();
                 currentStates.clear();
